@@ -252,7 +252,7 @@ async function loggedInOrLogInWithUrlParams()
 		return false;
 
 	// Create all Google API cookies
-	setCookie(COOKIE_GOOGLE_REFRESH_TOKEN, accessToken, REFRESH_TOKEN_EXPIRATION_DURATION_SEC);
+	setCookie(COOKIE_GOOGLE_REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_EXPIRATION_DURATION_SEC);
 	setCookie(COOKIE_GOOGLE_ACCESS_TOKEN, accessToken, accessTokenExpirationDurationSec);
 
 	return true;
