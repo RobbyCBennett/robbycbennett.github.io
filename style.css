@@ -1,0 +1,78 @@
+/* Variables */
+:root {
+	--size: 12px;
+	--border: 2px;
+
+	--text: #323232;
+	--body: #F2F2F7;
+	--box: #FCFCFC;
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--text: #EEEEEE;
+		--body: #19191F;
+		--box: #131317;
+	}
+}
+
+
+
+/* Fonts */
+@font-face {
+	font-family: 'Raleway';
+	src: url('/assets/ralewayRegular.woff2') format('woff2');
+	font-style: normal;
+	font-weight: 400;
+}
+
+
+
+/* General */
+html {
+	font-size: var(--size);
+	background: var(--body);
+}
+body {
+	font-size: 1.5rem;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Raleway';
+}
+body,
+h1 {
+	margin: 0;
+}
+body,
+a {
+	color: var(--text);
+}
+h1 {
+	position: absolute;
+	top: 1em;
+	font-weight: 400;
+}
+a {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+	background: var(--box);
+	width: 12.5rem;
+	height: 12.5rem;
+	text-decoration: none;
+	transition: all 0.25s;
+}
+a:hover {
+	box-shadow: 0 0 0 0.5rem var(--box);
+}
+a:active {
+	box-shadow: 0 0 0 1rem var(--box);
+}
+a img {
+	width: 5rem;
+	height: 5rem;
+	margin-bottom: 1rem;
+}
