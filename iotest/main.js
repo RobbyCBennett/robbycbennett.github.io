@@ -15,7 +15,7 @@ const eventHandler = function(e) {
 	if (!e.type.endsWith('down'))
 		return;
 
-	const newButton = e.key || `Mouse ${e.which}`;
+	const newButton = e.key ? (e.key === ' ' ? 'Key Space' : `Key ${e.key}`) : `Mouse ${e.which}`;
 
 	if (newButton !== button) {
 		button = newButton;
