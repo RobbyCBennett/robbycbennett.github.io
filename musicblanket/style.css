@@ -300,6 +300,9 @@ a.sheet::before {
 .stretchHeight {
 	flex: 1;
 }
+.height100 {
+	height: 100%;
+}
 #banner {
 	z-index: 3;
 	position: fixed;

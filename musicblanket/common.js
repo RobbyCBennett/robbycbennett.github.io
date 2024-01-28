@@ -178,6 +178,8 @@ function getCookie(name)
 function setCookie(name, value, expirationDurationSec)
 {
 	document.cookie = `${name}=${value}; max-age=${expirationDurationSec}; path=${HOME_PATH};`;
+	if (!hasCookie(name))
+		customAlert('Enable cookies', 'Ok');
 }
 
 

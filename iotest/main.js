@@ -35,3 +35,6 @@ window.onkeydown = eventHandler;
 window.onkeyup = eventHandler;
 window.onmousedown = eventHandler;
 window.onmouseup = eventHandler;
+
+
+document.getElementById('app').classList.remove('hidden');
