@@ -18,6 +18,20 @@ function generatePassword(characters, length)
 }
 
 
+function subtract()
+{
+	const lengthField = document.getElementById('length');
+	lengthField.value = Math.max(parseInt(lengthField.value) - 1, 0);
+}
+
+
+function add()
+{
+	const lengthField = document.getElementById('length');
+	lengthField.value = Math.max(parseInt(lengthField.value) + 1, 0);
+}
+
+
 /**
  * @param {HTMLElement} element element to animate
  * @param {string} color color of underline
@@ -64,6 +78,8 @@ function main()
 	document.getElementById('app').classList.remove('hidden');
 	document.getElementById('generate').onclick = generate;
 	document.getElementById('copy').onclick = copy;
+	document.getElementById('subtract').onclick = subtract;
+	document.getElementById('add').onclick = add;
 
 	generate();
 }

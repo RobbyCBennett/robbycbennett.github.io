@@ -4,13 +4,17 @@
 	--body: #F2F2F7;
 	--box: #FCFCFC;
 
-	--negative: #ba3865;
-	--negativeHover: #ad2b59;
-	--negativeActive: #a1204d;
-	--positive: #3b65ad;
-	--positiveHover: #2f58a1;
-	--positiveActive: #234d94;
+	--button: #E6E6F7;
 
+	--negative: #BA3865;
+	--negativeHover: #AD2B59;
+	--negativeActive: #A1204D;
+
+	--positive: #3B65AD;
+	--positiveHover: #2F58A1;
+	--positiveActive: #234D94;
+
+	--fieldHeight: 2.25rem;
 	--gap: 3rem;
 }
 
@@ -22,9 +26,14 @@
 		--body: #19191F;
 		--box: #131317;
 
+		--button: #262636;
+		--buttonHover: #232336;
+		--buttonActive: #202036;
+
 		--negative: #87294A;
 		--negativeHover: #7A1F3F;
 		--negativeActive: #6E1635;
+
 		--positive: #2A477A;
 		--positiveHover: #203D6E;
 		--positiveActive: #173261;
@@ -102,8 +111,9 @@ span {
 }
 
 input, button {
-	padding: 0.5em 1em;
+	padding: 0 1em;
 	font-size: 1rem;
+	height: var(--fieldHeight);
 }
 
 input {
@@ -116,28 +126,45 @@ input {
 	box-sizing: border-box;
 }
 
-input[type='number'] {
-	position: relative;
-}
-
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
-	opacity: 1;
-	width: 2rem;
-	position: absolute;
-	top: 0;
-	right: 0;
-	height: 100%;
-	cursor: pointer;
-	-webkit-tap-highlight-color: transparent;
+	display: none;
 }
 
 button {
+	color: var(--text);
+	background: var(--button);
 	cursor: pointer;
 	border: none;
 	flex: 1;
-	color: var(--textLight);
 	-webkit-tap-highlight-color: transparent;
+}
+
+button:hover {
+	background: var(--buttonHover);
+}
+
+button:active {
+	background: var(--buttonActive);
+}
+
+#subtract, #add {
+	width: var(--fieldHeight);
+	padding: 0;
+	position: absolute;
+	bottom: 0;
+}
+
+#subtract {
+	right: var(--fieldHeight);
+}
+
+#add {
+	right: 0;
+}
+
+.negative, .positive {
+	color: var(--textLight);
 }
 
 .negative {
