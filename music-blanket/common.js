@@ -7,7 +7,7 @@
 
 
 // Useful for having multiple apps on one site and also OAuth (Credentials > Authorized redirect URIs)
-const HOME_PATH = '/musicblanket';
+const HOME_PATH = '/music-blanket';
 const HOME_URL = `https://robbycbennett.github.io${HOME_PATH}`;
 
 // Values for multi-part requests, like file metadata & data

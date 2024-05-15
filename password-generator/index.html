@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+	<head>
+		<meta charset='utf-8'>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+
+		<title>Password Generator</title>
+		<meta name='description' content='Generate a new password'>
+
+		<link rel='icon' type='image/svg+xml' href='/password-generator/assets/logo.svg'>
+
+		<meta name='theme-color' content='#202026'>
+		<link as='style' rel='stylesheet' type='text/css' href='/password-generator/style.css'>
+
+		<link as='font' rel='preload' type='font/woff' href='/password-generator/assets/robotoLight.woff2' crossorigin='anonymous'>
+		<link as='font' rel='preload' type='font/woff' href='/password-generator/assets/sourceCodeProRegular.woff2' crossorigin='anonymous'>
+	</head>
+
+	<body>
+		<div class='container'>
+			<h1>Password Generator</h1>
+			<noscript>
+				<p>Enable JavaScript</span>
+			</noscript>
+
+			<div id='app' class='hidden'>
+				<label>
+					<span>Allowed characters</span>
+					<input id='characters' spellcheck='false' value='!&quot;#$%&&apos;()*+,-./:;<=>?@[\\]^_`{|}~ 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'>
+				</label>
+				<label>
+					<span>Length</span>
+					<input id='length' spellcheck='false' type='number' value='31' min='0' step='1'>
+				</label>
+				<label>
+					<span>Result</span>
+					<input id='result' spellcheck='false'>
+				</label>
+				<div class='row buttons'>
+					<button id='generate' class='negative'>Generate</button>
+					<button id='copy' class='positive'>Copy</button>
+				</div>
+			</div>
+		</div>
+
+		<script src='/password-generator/main.js'></script>
+	</body>
+</html>

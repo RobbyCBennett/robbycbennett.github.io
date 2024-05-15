@@ -55,19 +55,19 @@
 /* Fonts */
 @font-face {
 	font-family: 'Cinzel';
-	src: url('/musicblanket/assets/cinzelRegular.woff2') format('woff2');
+	src: url('/music-blanket/assets/cinzelRegular.woff2') format('woff2');
 	font-style: normal;
 	font-weight: 400;
 }
 @font-face {
 	font-family: 'Roboto';
-	src: url('/musicblanket/assets/robotoBlack.woff2') format('woff2');
+	src: url('/music-blanket/assets/robotoBlack.woff2') format('woff2');
 	font-style: normal;
 	font-weight: 900;
 }
 @font-face {
 	font-family: 'Roboto Slab';
-	src: url('/musicblanket/assets/robotoSlabRegular.woff2') format('woff2');
+	src: url('/music-blanket/assets/robotoSlabRegular.woff2') format('woff2');
 	font-style: normal;
 	font-weight: 400;
 }

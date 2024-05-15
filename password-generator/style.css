@@ -1,0 +1,165 @@
+:root {
+	--text: #323232;
+	--textLight: #EEEEEE;
+	--body: #F2F2F7;
+	--box: #FCFCFC;
+
+	--negative: #ba3865;
+	--negativeHover: #ad2b59;
+	--negativeActive: #a1204d;
+	--positive: #3b65ad;
+	--positiveHover: #2f58a1;
+	--positiveActive: #234d94;
+
+	--gap: 3rem;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+
+		--text: var(--textLight);
+		--body: #19191F;
+		--box: #131317;
+
+		--negative: #87294A;
+		--negativeHover: #7A1F3F;
+		--negativeActive: #6E1635;
+		--positive: #2A477A;
+		--positiveHover: #203D6E;
+		--positiveActive: #173261;
+	}
+}
+
+@font-face {
+	font-family: 'Roboto Light';
+	src: url('/password-generator/assets/robotoLight.woff2') format('woff2');
+	font-style: normal;
+	font-weight: 300;
+}
+
+@font-face {
+	font-family: 'Source Code Pro';
+	src: url('/password-generator/assets/sourceCodeProRegular.woff2') format('woff2');
+	font-style: normal;
+	font-weight: 400;
+}
+
+body {
+	background: var(--body);
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+	margin: 0;
+}
+
+body, input {
+	color: var(--text);
+}
+
+body, button {
+	font-family: 'Roboto Light';
+}
+
+.hidden {
+	display: none;
+}
+
+p {
+	text-align: center;
+}
+
+.container {
+	width: 100%;
+	max-width: 30rem;
+	margin: 1rem;
+}
+
+h1 {
+	text-align: center;
+	margin: 0;
+	font-size: 1.5rem;
+	font-weight: normal;
+}
+
+label, .row {
+	display: block;
+	margin-top: var(--gap);
+	width: 100%;
+	position: relative;
+}
+
+span {
+	position: absolute;
+	margin-top: -1.5em;
+	opacity: 0.5;
+}
+
+.buttons {
+	display: flex;
+	gap: var(--gap);
+}
+
+input, button {
+	padding: 0.5em 1em;
+	font-size: 1rem;
+}
+
+input {
+	width: 100%;
+	background: var(--box);
+	display: block;
+	outline: none;
+	border: none;
+	font-family: 'Source Code Pro';
+	box-sizing: border-box;
+}
+
+input[type='number'] {
+	position: relative;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+	opacity: 1;
+	width: 2rem;
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 100%;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+button {
+	cursor: pointer;
+	border: none;
+	flex: 1;
+	color: var(--textLight);
+	-webkit-tap-highlight-color: transparent;
+}
+
+.negative {
+	background: var(--negative);
+}
+
+.negative:hover {
+	background: var(--negativeHover);
+}
+
+.negative:active {
+	background: var(--negativeActive);
+}
+
+.positive {
+	background: var(--positive);
+}
+
+.positive:hover {
+	background: var(--positiveHover);
+}
+
+.positive:active {
+	background: var(--positiveActive);
+}
