@@ -10,7 +10,7 @@ function generatePassword(characters, length)
 	if (isNaN(length) || length < 1)
 		return '';
 	const result = [];
-	const indexes = new Uint32Array(characters.length);
+	const indexes = new Uint32Array(length);
 	window.crypto.getRandomValues(indexes);
 	for (let i = 0; i < length; ++i)
 		result.push(characters.charAt(indexes[i] % characters.length));
