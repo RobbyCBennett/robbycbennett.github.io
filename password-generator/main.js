@@ -18,20 +18,6 @@ function generatePassword(characters, length)
 }
 
 
-function subtract()
-{
-	const lengthField = document.getElementById('length');
-	lengthField.value = Math.max(parseInt(lengthField.value) - 1, 0);
-}
-
-
-function add()
-{
-	const lengthField = document.getElementById('length');
-	lengthField.value = Math.max(parseInt(lengthField.value) + 1, 0);
-}
-
-
 /**
  * @param {HTMLElement} element element to animate
  * @param {string} color color of underline
@@ -53,7 +39,21 @@ function animateUnderline(element, color)
 }
 
 
-function generate()
+function buttonSubtract()
+{
+	const lengthField = document.getElementById('length');
+	lengthField.value = Math.max(parseInt(lengthField.value) - 1, 0);
+}
+
+
+function buttonAdd()
+{
+	const lengthField = document.getElementById('length');
+	lengthField.value = Math.max(parseInt(lengthField.value) + 1, 0);
+}
+
+
+function buttonGenerate()
 {
 	const charactersField = document.getElementById('characters');
 	const lengthField = document.getElementById('length');
@@ -64,7 +64,7 @@ function generate()
 }
 
 
-function copy()
+function buttonCopy()
 {
 	const resultField = document.getElementById('result');
 
@@ -76,12 +76,12 @@ function copy()
 function main()
 {
 	document.getElementById('app').classList.remove('hidden');
-	document.getElementById('generate').onclick = generate;
-	document.getElementById('copy').onclick = copy;
-	document.getElementById('subtract').onclick = subtract;
-	document.getElementById('add').onclick = add;
+	document.getElementById('subtract').onclick = buttonSubtract;
+	document.getElementById('add').onclick = buttonAdd;
+	document.getElementById('generate').onclick = buttonGenerate;
+	document.getElementById('copy').onclick = buttonCopy;
 
-	generate();
+	buttonGenerate();
 }
 
 
