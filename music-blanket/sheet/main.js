@@ -69,6 +69,7 @@ async function googleApiGetFileMetadata()
 
 	return googleApiFetchJson(
 		'Getting music sheet',
+		'Failed to get music sheet',
 		`${GOOGLE_API_BASE_URL}/drive/v3/files/${ID}?${params}`
 	);
 }
@@ -88,6 +89,7 @@ async function googleApiGetFileData()
 
 	return googleApiFetchJson(
 		'Getting music sheet',
+		'Failed to get music sheet',
 		`${GOOGLE_API_BASE_URL}/drive/v3/files/${ID}?${params}`
 	);
 }
@@ -112,6 +114,7 @@ async function googleApiPatchFile()
 
 	return googleApiFetchJson(
 		'Updating music sheet',
+		'Failed to update music sheet',
 		`${GOOGLE_API_BASE_URL}/upload/drive/v3/files/${ID}?${params}`,
 		{
 			method: 'PATCH',
@@ -132,6 +135,7 @@ async function googleApiDeleteFile()
 
 	return googleApiFetchJson(
 		'Deleting music sheet',
+		'Failed to delete music sheet',
 		`${GOOGLE_API_BASE_URL}/drive/v3/files/${ID}`,
 		{
 			method: 'DELETE',

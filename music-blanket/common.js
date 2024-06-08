@@ -39,11 +39,12 @@ const COOKIE_GOOGLE_ACCESS_TOKEN = 'google-access-token';
 /**
  * Fetch JSON with the Google API, showing a loader while waiting
  * @param {string} loaderText
- * @param {string} resource
+ * @param {string} errorText for error messages like 'Failed to get music sheets'
+ * @param {string} url
  * @param {RequestInit} options
  * @param {boolean} useAccessToken
  */
-async function googleApiFetchJson(loaderText, resource, options={}, useAccessToken=true)
+async function googleApiFetchJson(loaderText, errorText, url, options={}, useAccessToken=true)
 {
 	/** @type {HTMLElement | null} */
 	let element = null;
@@ -84,7 +85,7 @@ async function googleApiFetchJson(loaderText, resource, options={}, useAccessTok
 		showElement(element, true);
 
 	// Get JSON object or null
-	const result = await fetch(resource, options)
+	const result = await fetch(url, options)
 		.then(async res => {
 			const body = await res.json();
 			return (body.error === undefined) ? body : null;
@@ -92,8 +93,12 @@ async function googleApiFetchJson(loaderText, resource, options={}, useAccessTok
 		.catch(() => null);
 
 	// Hide loader
-	if (element)
+	if (element = document.getElementById('loader'))
 		showElement(element, false);
+
+	// Show error popup
+	if (result === null)
+		customAlert(errorText, 'Ok');
 
 	return result;
 }
@@ -117,6 +122,7 @@ async function googleApiPostTokenFromCode(code)
 
 	return googleApiFetchJson(
 		'Getting access token & refresh token',
+		'Failed to get access token & refresh token',
 		`https://oauth2.googleapis.com/token?${params}`,
 		{
 			method: 'POST',
@@ -148,6 +154,7 @@ async function googleApiPostTokenFromRefreshToken()
 	// NOTE: the useActionToken parameter must be false to avoid infinite recursion
 	return googleApiFetchJson(
 		'Refreshing access token',
+		'Failed to refresh access token',
 		`https://oauth2.googleapis.com/token?${params}`,
 		{
 			method: 'POST',
@@ -272,7 +279,7 @@ async function loggedInOrLogInWithUrlParams()
 
 	// If there is no URL code, return whether or not the refresh token exists
 	if (code === null)
-		return hasCookie(COOKIE_GOOGLE_REFRESH_TOKEN);
+		return hasCookie(COOKIE_GOOGLE_REFRESH_TOKEN) || hasCookie(COOKIE_GOOGLE_ACCESS_TOKEN);
 
 	// Delete login URL search parameters
 	params.delete('code');

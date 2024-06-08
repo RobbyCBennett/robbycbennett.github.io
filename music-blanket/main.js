@@ -38,6 +38,7 @@ async function googleApiGetFiles()
 
 	return googleApiFetchJson(
 		'Getting music sheets',
+		'Failed to get music sheets',
 		`${GOOGLE_API_BASE_URL}/drive/v3/files?${params}`
 	);
 }
@@ -83,6 +84,7 @@ async function googleApiPostFile()
 
 	return googleApiFetchJson(
 		'Creating music sheet',
+		'Failed to create music sheet',
 		`${GOOGLE_API_BASE_URL}/upload/drive/v3/files?${params}`,
 		{
 			method: 'POST',
