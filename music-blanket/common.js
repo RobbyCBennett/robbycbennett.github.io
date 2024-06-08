@@ -1,3 +1,4 @@
+// @ts-check
 'use strict';
 
 
@@ -35,9 +36,18 @@ const COOKIE_GOOGLE_ACCESS_TOKEN = 'google-access-token';
 ////////////////
 
 
-// Fetch JSON with the Google API, showing a loader while waiting
+/**
+ * Fetch JSON with the Google API, showing a loader while waiting
+ * @param {string} loaderText
+ * @param {string} resource
+ * @param {RequestInit} options
+ * @param {boolean} useAccessToken
+ */
 async function googleApiFetchJson(loaderText, resource, options={}, useAccessToken=true)
 {
+	/** @type {HTMLElement | null} */
+	let element = null;
+
 	if (useAccessToken) {
 		// Get access token if it exists, otherwise try to refresh it
 		let accessToken = getCookie(COOKIE_GOOGLE_ACCESS_TOKEN);
@@ -64,13 +74,14 @@ async function googleApiFetchJson(loaderText, resource, options={}, useAccessTok
 		// Set authorization header
 		if (options.headers === undefined)
 			options.headers = new Headers();
-		options.headers.append('Authorization', `Bearer ${accessToken}`);
+		/** @type {Headers} */ (options.headers).append('Authorization', `Bearer ${accessToken}`);
 	}
 
 	// Show loader with the loader text
-	const loader = document.getElementById('loader');
-	document.getElementById('loaderText').innerText = loaderText;
-	showElement(loader, true);
+	if (element = document.getElementById('loaderText'))
+		element.innerText = loaderText;
+	if (element = document.getElementById('loader'))
+		showElement(element, true);
 
 	// Get JSON object or null
 	const result = await fetch(resource, options)
@@ -81,13 +92,17 @@ async function googleApiFetchJson(loaderText, resource, options={}, useAccessTok
 		.catch(() => null);
 
 	// Hide loader
-	showElement(loader, false);
+	if (element)
+		showElement(element, false);
 
 	return result;
 }
 
 
-// Create an access token and refresh token from an authorization code from logging in just now
+/**
+ * Create an access token and refresh token from an authorization code from logging in just now
+ * @param {string} code
+ */
 async function googleApiPostTokenFromCode(code)
 {
 	const params = new URLSearchParams({
@@ -106,12 +121,14 @@ async function googleApiPostTokenFromCode(code)
 		{
 			method: 'POST',
 		},
-		useAccessToken
+		useAccessToken,
 	);
 }
 
 
-// Create an access token from the existing refresh token
+/**
+ * Create an access token from the existing refresh token
+ */
 async function googleApiPostTokenFromRefreshToken()
 {
 	// Get refresh token or fail
@@ -126,6 +143,8 @@ async function googleApiPostTokenFromRefreshToken()
 		refresh_token: refreshToken,
 	});
 
+	const useAccessToken = false;
+
 	// NOTE: the useActionToken parameter must be false to avoid infinite recursion
 	return googleApiFetchJson(
 		'Refreshing access token',
@@ -133,12 +152,16 @@ async function googleApiPostTokenFromRefreshToken()
 		{
 			method: 'POST',
 		},
-		false
+		useAccessToken,
 	);
 }
 
 
-// Prepare the body of a Google API request using the file metadata and data
+/**
+ * Prepare the body of a Google API request using the file metadata and data
+ * @param {string} metadata as stringified JSON
+ * @param {string} data as stringified JSON
+ */
 function googleApiPrepareMultipartBody(metadata, data)
 {
 	return `\
@@ -160,6 +183,10 @@ ${data}\r\n\
 /////////////
 
 
+/**
+ * If a cookie of the name exists
+ * @param {string} name
+ */
 function hasCookie(name)
 {
 	const pattern = new RegExp(`${name}=(.*?)(;|$)`);
@@ -167,6 +194,10 @@ function hasCookie(name)
 }
 
 
+/**
+ * Get the value of a cookie
+ * @param {string} name
+ */
 function getCookie(name)
 {
 	const pattern = new RegExp(`${name}=(.*?)(;|$)`);
@@ -175,6 +206,12 @@ function getCookie(name)
 }
 
 
+/**
+ * Set or change a cookie
+ * @param {string} name
+ * @param {string} value
+ * @param {number} expirationDurationSec in seconds
+ */
 function setCookie(name, value, expirationDurationSec)
 {
 	document.cookie = `${name}=${value}; max-age=${expirationDurationSec}; path=${HOME_PATH};`;
@@ -183,6 +220,10 @@ function setCookie(name, value, expirationDurationSec)
 }
 
 
+/**
+ * Delete a cookie
+ * @param {string} name
+ */
 function deleteCookie(name)
 {
 	document.cookie = `${name}=0; max-age=0; path=${HOME_PATH};`;
@@ -194,7 +235,9 @@ function deleteCookie(name)
 ///////////
 
 
-// Keep the cookie by extending its life
+/**
+ * Keep the cookie by extending its life
+ */
 function keepCookie() {
 	// Get value or stop
 	const value = getCookie(COOKIE_GOOGLE_REFRESH_TOKEN);
@@ -206,7 +249,9 @@ function keepCookie() {
 }
 
 
-// Continuously keep the cookie
+/**
+ * Continuously keep the cookie
+ */
 function keepCookieLoop()
 {
 	keepCookie();
@@ -216,7 +261,9 @@ function keepCookieLoop()
 }
 
 
-// Login using the URL parameters that may exist, unless the cookie already exists
+/**
+ * Login using the URL parameters that may exist, unless the cookie already exists
+ */
 async function loggedInOrLogInWithUrlParams()
 {
 	// Get existing URL search parameters
@@ -261,7 +308,9 @@ async function loggedInOrLogInWithUrlParams()
 }
 
 
-// Try to login if not already, showing the appropriate logged in/out UI
+/**
+ * Try to login if not already, showing the appropriate logged in/out UI
+ */
 async function tryLoginIfNotThenShowUi()
 {
 	const loggedIn = await loggedInOrLogInWithUrlParams();
@@ -275,6 +324,9 @@ async function tryLoginIfNotThenShowUi()
 }
 
 
+/**
+ * Delete cookies and either refresh the UI or go to the home page
+ */
 function logOut()
 {
 	// Delete all Google API cookies
@@ -295,43 +347,76 @@ function logOut()
 //////////////////////
 
 
+/**
+ * Close the alert popup
+ */
+function onClickClose()
+{
+	/** @type {HTMLElement | null} */
+	let element = null;
+
+	if (element = document.getElementById('alert'))
+		showElement(element, false);
+}
+
+
+/**
+ * Like the alert function, but more pretty
+ * @param {string} message
+ * @param {string} closeText
+ * @param {string | undefined} dangerText
+ * @param {(() => any) | undefined} dangerFunction
+ */
 function customAlert(message, closeText, dangerText=undefined, dangerFunction=undefined)
 {
+	/** @type {HTMLElement | null} */
+	let element = null;
+
 	// Set text
-	const alertText = document.getElementById('alertText');
-	alertText.innerText = message;
+	if (element = document.getElementById('alertText'))
+		element.innerText = message;
 
 	// Show and focus
-	const alert = document.getElementById('alert');
-	showElement(alert, true);
-	alert.setAttribute('tabindex', '0');
-	alert.focus();
+	if (element = document.getElementById('alert')) {
+		showElement(element, true);
+		element.setAttribute('tabindex', '0');
+		element.focus();
+	}
 
 	// Close button
-	const alertClose = document.getElementById('alertClose');
-	alertClose.innerText = closeText;
-	if (alertClose.onclick === null) {
-		alertClose.onclick = function() {
-			showElement(alert, false);
-		};
+	if (element = document.getElementById('alertClose')) {
+		element.innerText = closeText;
+		if (element.onclick === null)
+			element.onclick = onClickClose;
 	}
 
 	// Danger button
-	const alertDanger = document.getElementById('alertDanger');
-	if (dangerText === undefined || dangerFunction === undefined) {
-		showElement(alertDanger, false);
-	}
-	else {
-		alertDanger.innerText = dangerText;
-		alertDanger.onclick = function() {
-			showElement(alert, false);
-			dangerFunction();
-		};
-		showElement(alertDanger, true);
+	if (element = document.getElementById('alertDanger')) {
+		if (dangerText === undefined || dangerFunction === undefined) {
+			showElement(element, false);
+		}
+		else {
+			element.innerText = dangerText;
+			element.onclick = function() {
+				/** @type {HTMLElement | null} */
+				let element = null;
+
+				if (element = document.getElementById('alert'))
+					showElement(element, false);
+
+				dangerFunction();
+			};
+			showElement(element, true);
+		}
 	}
 }
 
 
+/**
+ * Show or hide an element
+ * @param {Element} element
+ * @param {boolean} shouldShow
+ */
 function showElement(element, shouldShow)
 {
 	if (shouldShow)
@@ -346,6 +431,9 @@ function showElement(element, shouldShow)
 /////////////
 
 
+/**
+ * Toolbar action: show a prompt to log out
+ */
 function toolLogOut()
 {
 	customAlert('Do you want to log out?', 'Stay logged in', 'Log out', logOut);

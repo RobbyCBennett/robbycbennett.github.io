@@ -1,3 +1,4 @@
+// @ts-check
 'use strict';
 
 
@@ -6,7 +7,9 @@
 ////////////////
 
 
-// Get the URL to log in at google.com
+/**
+ * Get the URL to log in at google.com
+ */
 function googleUiUrlAuthorizationToken()
 {
 	const params = new URLSearchParams({
@@ -22,12 +25,14 @@ function googleUiUrlAuthorizationToken()
 }
 
 
-// Get music sheet files in Google Drive
+/**
+ * Get music sheet files in Google Drive
+ */
 async function googleApiGetFiles()
 {
 	const params = new URLSearchParams({
 		fields: 'files(id,name)',
-		pageSize: 1000,
+		pageSize: '1000',
 		spaces: 'appDataFolder',
 	});
 
@@ -38,7 +43,9 @@ async function googleApiGetFiles()
 }
 
 
-// Post new music sheet file in Google Drive
+/**
+ * Post new music sheet file in Google Drive
+ */
 async function googleApiPostFile()
 {
 	const params = new URLSearchParams({
@@ -91,6 +98,9 @@ async function googleApiPostFile()
 /////////////
 
 
+/**
+ * Toolbar action: new music sheet
+ */
 async function toolNewSheet()
 {
 	// Post the new file or fail
@@ -112,21 +122,31 @@ async function toolNewSheet()
 //////////
 
 
+/**
+ * Main function of the home page /
+ */
 async function main()
 {
+	/** @type {HTMLElement | null} */
+	let element = null;
+
 	// Initialize login link
-	document.getElementById('login').href = googleUiUrlAuthorizationToken();
+	if (element = document.getElementById('login'))
+		/** @type {HTMLAnchorElement} */ (element).href = googleUiUrlAuthorizationToken();
 
 	// Initialize toolbar buttons
-	document.getElementById('toolLogOut').onclick = toolLogOut;
-	document.getElementById('toolNewSheet').onclick = toolNewSheet;
+	if (element = document.getElementById('toolLogOut'))
+		element.onclick = toolLogOut;
+	if (element = document.getElementById('toolNewSheet'))
+		element.onclick = toolNewSheet;
 
 	keepCookieLoop();
 
 	const loggedIn = await tryLoginIfNotThenShowUi();
 
 	// Show the toolbar
-	showElement(document.getElementById('tools'), true);
+	if (element = document.getElementById('tools'))
+		showElement(element, true);
 
 	// Stop if not logged in
 	if (!loggedIn)
@@ -138,17 +158,20 @@ async function main()
 		return;
 
 	// Display each file
-	const sheetLinks = document.getElementById('sheetLinks');
-	sheetLinks.innerText = '';
-	for (const file of filesObj.files) {
-		const sheetLink = document.createElement('a');
-		const params = new URLSearchParams({
-			id: file.id,
-		});
-		sheetLink.href = `${HOME_PATH}/sheet?${params}`;
-		sheetLink.classList = 'wideBox sheet';
-		sheetLink.innerText = file.name;
-		sheetLinks.appendChild(sheetLink);
+	if (element = document.getElementById('sheetLinks')) {
+		element.innerText = '';
+		for (const file of filesObj.files) {
+			const sheetLink = document.createElement('a');
+			const params = new URLSearchParams({
+				id: file.id,
+			});
+			sheetLink.href = `${HOME_PATH}/sheet?${params}`;
+			// sheetLink.classList = 'wideBox sheet';
+			// @ts-ignore
+			sheetLink.classList = 'wideBox sheet';
+			sheetLink.innerText = file.name;
+			element.appendChild(sheetLink);
+		}
 	}
 
 	// Display a hint if there are no files

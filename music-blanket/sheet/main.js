@@ -1,3 +1,4 @@
+// @ts-check
 'use strict';
 
 
@@ -54,7 +55,9 @@ const cursor = {
 ////////////////
 
 
-// Get music sheet file metadata in Google Drive
+/**
+ * Get music sheet file metadata in Google Drive
+ */
 async function googleApiGetFileMetadata()
 {
 	if (ID === null)
@@ -71,7 +74,9 @@ async function googleApiGetFileMetadata()
 }
 
 
-// Get music sheet file data in Google Drive
+/**
+ * Get music sheet file data in Google Drive
+ */
 async function googleApiGetFileData()
 {
 	if (ID === null)
@@ -88,7 +93,9 @@ async function googleApiGetFileData()
 }
 
 
-// Update music sheet file metadata & data in Google Drive
+/**
+ * Update music sheet file metadata & data in Google Drive
+ */
 async function googleApiPatchFile()
 {
 	const params = new URLSearchParams({
@@ -115,7 +122,9 @@ async function googleApiPatchFile()
 }
 
 
-// Delete music sheet file in Google Drive
+/**
+ * Delete music sheet file in Google Drive
+ */
 async function googleApiDeleteFile()
 {
 	if (ID === null)
@@ -136,6 +145,9 @@ async function googleApiDeleteFile()
 /////////////
 
 
+/**
+ * Toolbar action: move the cursor left
+ */
 function toolMoveLeft()
 {
 	// Same measure
@@ -168,6 +180,10 @@ function toolMoveLeft()
 }
 
 
+
+/**
+ * Toolbar action: move the cursor right
+ */
 function toolMoveRight()
 {
 	// Same measure
@@ -196,6 +212,9 @@ function toolMoveRight()
 }
 
 
+/**
+ * Toolbar action: start editing the music sheet
+ */
 function toolEditSheet()
 {
 	editing = true;
@@ -203,6 +222,9 @@ function toolEditSheet()
 }
 
 
+/**
+ * Toolbar action: save the music sheet
+ */
 async function toolSaveSheet()
 {
 	// Stop if already saved
@@ -220,6 +242,9 @@ async function toolSaveSheet()
 }
 
 
+/**
+ * Toolbar action: finish editing the music sheet
+ */
 function toolDoneEditingSheet()
 {
 	editing = false;
@@ -227,6 +252,9 @@ function toolDoneEditingSheet()
 }
 
 
+/**
+ * Toolbar action: clear the current column or erase it if it's already clear
+ */
 function toolBackspace()
 {
 	// See if the column is empty
@@ -249,12 +277,18 @@ function toolBackspace()
 }
 
 
+/**
+ * Toolbar action: show a confirmation popup to delete the music sheet
+ */
 function toolDeleteSheet()
 {
 	customAlert(`Delete sheet "${sheetName}"`, 'Keep', 'Delete', deleteSheetAndGoHome);
 }
 
 
+/**
+ * Toolbar action: create a blank space on the music sheet
+ */
 function toolSpace()
 {
 	// Create the first new column
@@ -277,6 +311,9 @@ function toolSpace()
 }
 
 
+/**
+ * Toolbar action: add a measure in the music sheet
+ */
 function toolAddMeasure()
 {
 	// Change data
@@ -285,7 +322,7 @@ function toolAddMeasure()
 		'endRepeat': false,
 		'columns': [],
 	};
-	insertArrayItem(getLine(), cursor.measure, measure);
+	insertArrayItemAfterIndex(getLine(), cursor.measure, measure);
 
 	cursor.measure += 1;
 	cursor.column = 0;
@@ -297,11 +334,14 @@ function toolAddMeasure()
 }
 
 
+/**
+ * Toolbar action: add a line in the music sheet
+ */
 function toolAddLine()
 {
 	// Change data
 	const line = [];
-	insertArrayItem(getLines(), cursor.line, line);
+	insertArrayItemAfterIndex(getLines(), cursor.line, line);
 
 	cursor.line += 1;
 	cursor.measure = -1;
@@ -319,10 +359,15 @@ function toolAddLine()
 //////////////////
 
 
-function onTitleChanged(e)
+/**
+ *
+ * @param {InputEvent} event
+ */
+function onInputOfTitle(event)
 {
 	// Change data
-	sheetName = e.target.value;
+	if (event.target !== null)
+		sheetName = /** @type {HTMLInputElement} */ (event.target).value;
 
 	// Change UI
 	updatePageTitle();
@@ -331,12 +376,18 @@ function onTitleChanged(e)
 }
 
 
+/**
+ * Update the title which appears in the tab
+ */
 function updatePageTitle()
 {
 	document.title = `${sheetName} - Music Blanket`;
 }
 
 
+/**
+ * Delete the music sheet and go to the home page
+ */
 async function deleteSheetAndGoHome()
 {
 	await googleApiDeleteFile();
@@ -349,18 +400,33 @@ async function deleteSheetAndGoHome()
 //////////////////////
 
 
-function insertArrayItem(array, index, item)
+/**
+ * Insert an item into an array immediately after a specifc index
+ * @param {any[]} array
+ * @param {number} index
+ * @param {any} item
+ */
+function insertArrayItemAfterIndex(array, index, item)
 {
 	array.splice(index + 1, 0, item);
 }
 
 
+/**
+ * Remove an item from an array at a specifc index
+ * @param {any[]} array
+ * @param {number} index
+ */
 function removeArrayItem(array, index)
 {
 	array.splice(index, 1);
 }
 
 
+/**
+ * Given an ASCII letter, get the next one
+ * @param {string} letter
+ */
 function incrementLetter(letter)
 {
 	return String.fromCharCode(letter.charCodeAt(0) + 1);
@@ -372,35 +438,67 @@ function incrementLetter(letter)
 ////////////
 
 
+/**
+ * Using the cursor object, update the cursor in the UI
+ */
 function updateCursor()
 {
-	// Get position in UI
-	const oldColumn = document.getElementById('cursor');
-	const lines = document.getElementById('lines');
-	const line = lines.children[cursor.line];
-	const measure = line.children[cursor.measure];
-	const newColumn = measure.children[cursor.column];
+	/** @type {Element | null} */
+	let element = null;
 
-	// Change id
-	if (oldColumn)
-		oldColumn.removeAttribute('id');
-	newColumn.id = 'cursor';
+	// Remove id of old cursor
+	if (element = document.getElementById('cursor'))
+		element.removeAttribute('id');
+
+	// Stop showing a new cursor if not editing
+	if (!editing)
+		return;
+
+	// Get the cursor element
+	element = document.getElementById('lines');
+	if (element === null)
+		return;
+	element = element.children[cursor.line];
+	if (element === undefined)
+		return;
+	element = element.children[cursor.measure];
+	if (element === undefined)
+		return;
+	element = element.children[cursor.column];
+	if (element === undefined)
+		return;
+
+	// Set id of new cursor
+	element.id = 'cursor';
 }
 
 
-function selectColumn(e)
+/**
+ * When a column is clicked, select update the cursor to that clicked column
+ * @param {PointerEvent} event
+ */
+function onClickColumn(event)
 {
-	const columnDiv = e.target.className === 'column' ? e.target : e.target.parentElement;
-	const measureDiv = columnDiv.parentElement;
-	const lineDiv = measureDiv.parentElement;
+	// Get the target or fail
+	/** @ts-ignore @type {HTMLElement | null} */
+	const target = event.target;
+	if (target === null)
+		return;
+
+	const columnDiv = target.className === 'column' ? target : target.parentElement;
+	const measureDiv = columnDiv ? columnDiv.parentElement : null;
+	const lineDiv = measureDiv ? measureDiv.parentElement : null;
+
+	if (!columnDiv || !measureDiv || !lineDiv)
+		return;
 
 	// Skip when clicking the cursor
 	if (columnDiv.id === 'cursor')
 		return;
 
-	cursor.column = parseInt(columnDiv.dataset.i);
-	cursor.measure = parseInt(measureDiv.dataset.i);
-	cursor.line = parseInt(lineDiv.dataset.i);
+	cursor.column = parseInt(/** @type {string} */ (columnDiv.dataset.i));
+	cursor.measure = parseInt(/** @type {string} */ (measureDiv.dataset.i));
+	cursor.line = parseInt(/** @type {string} */ (lineDiv.dataset.i));
 
 	updateCursor();
 }
@@ -411,40 +509,65 @@ function selectColumn(e)
 ///////////////////
 
 
-function getLines(c=cursor)
+/**
+ * Get all lines from the sheet data
+ */
+function getLines()
 {
 	return sheetData.lines;
 }
 
 
-function getLine(c=cursor)
+/**
+ * Using a current or new cursor, get the line from the sheet data
+ * @param {{line: number, measure: number, column: number}} newCursor
+ */
+function getLine(newCursor=cursor)
 {
-	return getLines(c)[c.line];
+	return getLines()[newCursor.line];
 }
 
 
-function getMeasure(c=cursor)
+/**
+ * Using a current or new cursor, get the measure from the sheet data
+ * @param {{line: number, measure: number, column: number}} newCursor
+ */
+function getMeasure(newCursor=cursor)
 {
-	return getLine(c)[c.measure];
+	return getLine(newCursor)[newCursor.measure];
 }
 
 
-function getColumns(c=cursor)
+/**
+ * Using a current or new cursor, get the columns from the sheet data
+ * @param {{line: number, measure: number, column: number}} newCursor
+ */
+function getColumns(newCursor=cursor)
 {
-	return getMeasure(c).columns;
+	return getMeasure(newCursor).columns;
 }
 
 
-function getColumn(c=cursor)
+/**
+ * Using a current or new cursor, get the column from the sheet data
+ * @param {{line: number, measure: number, column: number}} newCursor
+ */
+function getColumn(newCursor=cursor)
 {
-	return getColumns(c)[c.column];
+	return getColumns(newCursor)[newCursor.column];
 }
 
 
+/**
+ * Get the string letter and fret number from the strings
+ * @param {number} note
+ * @param {number} fret
+ * @returns {[letter, number]}
+ */
 function getNote(note, fret)
 {
 	let letter = STRINGS[note][0];
-	let number = STRINGS[note][1];
+	let number = parseInt(STRINGS[note][1]);
 	for (let i = 0; i < fret; i++) {
 		// Sharp to whole
 		if (letter[1] === '#')
@@ -464,7 +587,7 @@ function getNote(note, fret)
 		if (letter === 'C')
 			number++;
 	}
-	return [letter, number.toString()];
+	return [letter, number];
 }
 
 
@@ -473,6 +596,11 @@ function getNote(note, fret)
 ///////////////////
 
 
+/**
+ * Change the note on the sheet music
+ * @param {number} note
+ * @param {string} fret
+ */
 function changeNote(note, fret)
 {
 	// Change data
@@ -483,17 +611,23 @@ function changeNote(note, fret)
 }
 
 
+/**
+ * Add a new column to the sheet immediately after the cursor
+ */
 function addColumn()
 {
 	// Change data
 	const column = ['', '', '', '', '', ''];
-	insertArrayItem(getColumns(), cursor.column, column);
+	insertArrayItemAfterIndex(getColumns(), cursor.column, column);
 
 	// Change UI
 	createSheet();
 }
 
 
+/**
+ * Clear the current column at the cursor
+ */
 function clearColumn()
 {
 	// Change data
@@ -505,6 +639,9 @@ function clearColumn()
 }
 
 
+/**
+ * Remove the current column at the cursor
+ */
 function removeColumn()
 {
 	// Copy the cursor and move left
@@ -512,7 +649,7 @@ function removeColumn()
 	toolMoveLeft();
 
 	// Get data
-	const lines = getLines(oldCursor);
+	const lines = getLines();
 	const line = getLine(oldCursor);
 	const columns = getColumns(oldCursor);
 
@@ -535,10 +672,22 @@ function removeColumn()
 }
 
 
-function pressFret(e)
+/**
+ * Press the clicked fret and change the sheet music
+ * @param {PointerEvent} event
+ */
+function onClickFret(event)
 {
-	const note = e.target.dataset.note;
-	const fret = e.target.dataset.fret;
+	/** @ts-ignore @type {HTMLElement | null} */
+	const target = event.target;
+	if (target === null)
+		return;
+
+	/** @ts-ignore */
+	const note = parseInt(target.dataset.note);
+	const fret = target.dataset.fret;
+	if (fret === undefined)
+		return;
 
 	changeNote(note, fret);
 
@@ -555,21 +704,30 @@ function pressFret(e)
 //////////////////////
 
 
+/**
+ * Using the sheet data, create the music sheet in the UI
+ */
 function createSheet()
 {
+	/** @type {HTMLElement | null} */
+	let element = null;
+
 	// Squash the sheet container if editing, otherwise stretch it out
-	const sheetContainer = document.getElementById('sheetContainer');
-	if (editing) {
-		sheetContainer.classList.add('stretchHeight');
-		sheetContainer.classList.add('center');
-	}
-	else {
-		sheetContainer.classList.remove('stretchHeight');
-		sheetContainer.classList.remove('center');
+	if (element = document.getElementById('sheetContainer')) {
+		if (editing) {
+			element.classList.add('stretchHeight');
+			element.classList.add('center');
+		}
+		else {
+			element.classList.remove('stretchHeight');
+			element.classList.remove('center');
+		}
 	}
 
 	// Clear sheet
 	const sheet = document.getElementById('sheet');
+	if (sheet === null)
+		return;
 	sheet.innerHTML = '';
 
 	// Create title
@@ -578,14 +736,14 @@ function createSheet()
 	title.className = 'sheetTitle';
 	title.placeholder = 'Title';
 	title.value = sheetName;
-	title.oninput = onTitleChanged;
+	/** @ts-ignore */
+	title.oninput = onInputOfTitle;
 	sheet.appendChild(title);
 
 	// Create lines div
 	const linesDiv = document.createElement('div');
 	linesDiv.className = 'lines';
-	if (editing)
-		linesDiv.id = 'lines';
+	linesDiv.id = 'lines';
 	sheet.appendChild(linesDiv);
 
 	// Create lines
@@ -593,19 +751,19 @@ function createSheet()
 		const lineDiv = document.createElement('div');
 		lineDiv.className = 'line';
 		if (editing)
-			lineDiv.dataset.i = lineI;
+			lineDiv.dataset.i = lineI.toString();
 		linesDiv.appendChild(lineDiv);
 
 		// Create measures
 		line.forEach((measure, measureI) => {
 			const measureDiv = document.createElement('div');
 			measureDiv.className = 'measure';
-			if (measureDiv.beginRepeat)
+			if (measure.beginRepeat)
 				measureDiv.classList.add('beginRepeat');
-			if (measureDiv.endRepeat)
+			if (measure.endRepeat)
 				measureDiv.classList.add('endRepeat');
 			if (editing)
-				measureDiv.dataset.i = measureI;
+				measureDiv.dataset.i = measureI.toString();
 			lineDiv.appendChild(measureDiv);
 
 			// Create columns
@@ -614,8 +772,9 @@ function createSheet()
 				const columnDiv = document.createElement('div');
 				columnDiv.className = 'column';
 				if (editing) {
-					columnDiv.dataset.i = columnI;
-					columnDiv.onclick = selectColumn;
+					columnDiv.dataset.i = columnI.toString();
+					/** @ts-ignore */
+					columnDiv.onclick = onClickColumn;
 				}
 				measureDiv.appendChild(columnDiv);
 
@@ -641,34 +800,40 @@ function createSheet()
 
 function createFretboard(showNumbers=false)
 {
+	/** @type {HTMLElement | null} */
+	let containerElement = null;
+
 	// Header with fret numbers
-	const fakeString = document.getElementById('fakeString');
-	fakeString.innerHTML = '';
-	for (let i = 0; i < FRET_COUNT; i++) {
-		const fret = document.createElement('span');
-		fret.className = 'fret';
-		fret.innerHTML = i;
-		fakeString.appendChild(fret);
+	if (containerElement = document.getElementById('fakeString')) {
+		containerElement.innerHTML = '';
+		for (let i = 0; i < FRET_COUNT; i++) {
+			const fret = document.createElement('span');
+			fret.className = 'fret';
+			fret.innerText = i.toString();
+			containerElement.appendChild(fret);
+		}
 	}
 
 	// Strings
-	const stringsDiv = document.getElementById('strings');
-	stringsDiv.innerHTML = '';
-	for (let i = 0; i < STRINGS.length; i++) {
-		const note = document.createElement('div');
-		note.className = 'note';
-		stringsDiv.appendChild(note);
+	if (containerElement = document.getElementById('strings')) {
+		containerElement.innerHTML = '';
+		for (let i = 0; i < STRINGS.length; i++) {
+			const note = document.createElement('div');
+			note.className = 'note';
+			containerElement.appendChild(note);
 
-		// Frets
-		for (let j = 0; j < FRET_COUNT; j++) {
-			const fret = document.createElement('button');
-			const [letter, number] = getNote(i, j);
-			fret.className = 'fret';
-			fret.innerHTML = letter + (showNumbers ? number : '');
-			fret.dataset.note = i;
-			fret.dataset.fret = j;
-			fret.onclick = pressFret;
-			note.appendChild(fret);
+			// Frets
+			for (let j = 0; j < FRET_COUNT; j++) {
+				const fret = document.createElement('button');
+				const [letter, number] = getNote(i, j);
+				fret.className = 'fret';
+				fret.innerHTML = letter + (showNumbers ? number.toString() : '');
+				fret.dataset.note = i.toString();
+				fret.dataset.fret = j.toString();
+				/** @ts-ignore */
+				fret.onclick = onClickFret;
+				note.appendChild(fret);
+			}
 		}
 	}
 }
@@ -676,8 +841,12 @@ function createFretboard(showNumbers=false)
 
 function showEditingOrNotEditingUi()
 {
+	/** @type {HTMLElement | null} */
+	let element = null;
+
 	// Start/stop editing the title
-	document.getElementById('sheetTitle').readOnly = !editing;
+	if (element = document.getElementById('sheetTitle'))
+		/** @type {HTMLInputElement} */ (element).readOnly = !editing;
 
 	// Hide/show elements like the fretboard
 	for (const element of document.getElementsByClassName('notEditing'))
@@ -691,15 +860,22 @@ function showEditingOrNotEditingUi()
 
 function showSavedOrUnsavedUi()
 {
+	/** @type {HTMLElement | null} */
+	let element = null;
+
 	// Toggle the save/done button
-	showElement(document.getElementById('toolSaveSheet'), editing && !saved);
-	showElement(document.getElementById('toolDoneEditingSheet'), editing && saved);
+	if (element = document.getElementById('toolSaveSheet'))
+		showElement(element, editing && !saved);
+	if (element = document.getElementById('toolDoneEditingSheet'))
+		showElement(element, editing && saved);
 
 	// If unsaved, prevent navigation
 	if (editing && !saved)
 		window.onbeforeunload = function() { return true; };
 	else
-		window.onbeforeunload = undefined;
+		window.onbeforeunload = null;
+
+	updateCursor();
 }
 
 
@@ -708,20 +884,37 @@ function showSavedOrUnsavedUi()
 //////////
 
 
+/**
+ * Main function of the page /sheet
+ */
 async function main()
 {
+	/** @type {HTMLElement | null} */
+	let element = null;
+
 	// Initialize toolbar buttons
-	document.getElementById('toolLogOut').onclick = toolLogOut;
-	document.getElementById('toolMoveLeft').onclick = toolMoveLeft;
-	document.getElementById('toolMoveRight').onclick = toolMoveRight;
-	document.getElementById('toolSpace').onclick = toolSpace;
-	document.getElementById('toolAddMeasure').onclick = toolAddMeasure;
-	document.getElementById('toolAddLine').onclick = toolAddLine;
-	document.getElementById('toolBackspace').onclick = toolBackspace;
-	document.getElementById('toolDeleteSheet').onclick = toolDeleteSheet;
-	document.getElementById('toolEditSheet').onclick = toolEditSheet;
-	document.getElementById('toolSaveSheet').onclick = toolSaveSheet;
-	document.getElementById('toolDoneEditingSheet').onclick = toolDoneEditingSheet;
+	if (element = document.getElementById('toolLogOut'))
+		element.onclick = toolLogOut;
+	if (element = document.getElementById('toolMoveLeft'))
+		element.onclick = toolMoveLeft;
+	if (element = document.getElementById('toolMoveRight'))
+		element.onclick = toolMoveRight;
+	if (element = document.getElementById('toolSpace'))
+		element.onclick = toolSpace;
+	if (element = document.getElementById('toolAddMeasure'))
+		element.onclick = toolAddMeasure;
+	if (element = document.getElementById('toolAddLine'))
+		element.onclick = toolAddLine;
+	if (element = document.getElementById('toolBackspace'))
+		element.onclick = toolBackspace;
+	if (element = document.getElementById('toolDeleteSheet'))
+		element.onclick = toolDeleteSheet;
+	if (element = document.getElementById('toolEditSheet'))
+		element.onclick = toolEditSheet;
+	if (element = document.getElementById('toolSaveSheet'))
+		element.onclick = toolSaveSheet;
+	if (element = document.getElementById('toolDoneEditingSheet'))
+		element.onclick = toolDoneEditingSheet;
 
 	keepCookieLoop();
 
@@ -739,7 +932,8 @@ async function main()
 	]);
 
 	// Show the toolbar
-	showElement(document.getElementById('tools'), true);
+	if (element = document.getElementById('tools'))
+		showElement(element, true);
 
 	// Stop if the sheet wasn't received
 	if (metadata === null || possibleSheetData === null)
@@ -756,7 +950,8 @@ async function main()
 	// Create the music sheet and fretboard UI
 	createSheet();
 	createFretboard();
-	showElement(document.getElementById('sheetContainer'), true);
+	if (element = document.getElementById('sheetContainer'))
+		showElement(element, true);
 	showEditingOrNotEditingUi();
 }
 
