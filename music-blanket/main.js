@@ -26,10 +26,42 @@ function googleUiUrlAuthorizationToken()
 
 
 /**
- * Get music sheet files in Google Drive
+ * Get data of a music sheet files in Google Drive and save it in the object
+ * @param {string} id of the music sheet
+ * @param {string} name of the music sheet
+ * @param {number} numberOutOfTotal number from 1 to total
+ * @param {number} totalCount number of files
+ * @param {Map<string, object>} nameAndIdToSheetDataMap
  */
-async function googleApiGetFiles()
+async function googleApiGetFileDataWithProgress(id, name, numberOutOfTotal, totalCount, nameAndIdToSheetDataMap)
 {
+	const params = new URLSearchParams({
+		alt: 'media',
+	});
+
+	const data = await googleApiFetchJson(
+		`Getting music sheet ${numberOutOfTotal} of ${totalCount}`,
+		`Failed to get music sheet ${numberOutOfTotal} of ${totalCount}`,
+		`${GOOGLE_API_BASE_URL}/drive/v3/files/${id}?${params}`
+	);
+
+	nameAndIdToSheetDataMap.set(name + id, {
+		name: name,
+		data: data,
+	});
+
+	return (data === null) ? false : true;
+}
+
+
+/**
+ * Get id and name of all music sheet files in Google Drive
+ * @returns {Promise<{files: {id: string, name: string}[]} | null>}
+ */
+async function googleApiGetFilesMetadata()
+{
+	// TODO do multiple requests if there are more than 1000 music sheets
+
 	const params = new URLSearchParams({
 		fields: 'files(id,name)',
 		pageSize: '1000',
@@ -37,8 +69,8 @@ async function googleApiGetFiles()
 	});
 
 	return googleApiFetchJson(
-		'Getting music sheets',
-		'Failed to get music sheets',
+		'Getting names of music sheets',
+		'Failed to get names of music sheets',
 		`${GOOGLE_API_BASE_URL}/drive/v3/files?${params}`
 	);
 }
@@ -119,6 +151,83 @@ async function toolNewSheet()
 }
 
 
+/**
+ * Toolbar action: download all music sheets as JSON
+ */
+async function toolDownloadAll()
+{
+	// Get files or stop
+	const filesObj = await googleApiGetFilesMetadata();
+	if (filesObj === null || filesObj.files.length === 0)
+		return;
+
+	// Build the queue of files to download by traversing in reverse order
+	let numberOutOfTotal = 1;
+	const total = filesObj.files.length;
+	const requestInfoQueue = [];
+	for (let i = filesObj.files.length - 1; i > -1; i--) {
+		const file = filesObj.files[i];
+		requestInfoQueue.push({
+			id: file.id,
+			name: file.name,
+			numberOutOfTotal: numberOutOfTotal,
+		});
+		numberOutOfTotal++;
+	}
+
+	// TODO support more than QUERIES_PER_MINUTE total queries
+
+	// Send requests to download them all
+	/** @type {Promise<boolean>[]} */
+	const requestPromises = [];
+	/** @type {Map<string, object>} */
+	const nameAndIdToSheetDataMap = new Map();
+	for (let i = 0; i < QUERIES_PER_MINUTE; i++) {
+		if (requestInfoQueue.length === 0)
+			break;
+		/** @ts-ignore @type {{id: string, name: string, numberOutOfTotal: number}} */
+		const requestInfo = requestInfoQueue.pop();
+		requestPromises.push(googleApiGetFileDataWithProgress(
+			requestInfo.id,
+			requestInfo.name,
+			requestInfo.numberOutOfTotal,
+			total,
+			nameAndIdToSheetDataMap,
+		));
+	}
+
+	// Wait for them all to download
+	const successOfAllSheets = await Promise.all(requestPromises);
+
+	// Show a popup if there were any failures
+	let failures = 0;
+	for (const success of successOfAllSheets)
+		if (!success)
+			failures++;
+	if (failures === 1)
+		customAlert('Failed to download the only music sheet', 'Ok');
+	else if (failures)
+		customAlert(`Failed to download ${failures} of ${total} music sheets`, 'Ok');
+
+	// Stringify and download the content as an array
+	const anchor = document.createElement('a');
+	anchor.download = 'music-blanket.json';
+	anchor.href = window.URL.createObjectURL(new Blob(
+		[JSON.stringify(Array.from(nameAndIdToSheetDataMap.values()))],
+		{ type: 'application/json' },
+	));
+	anchor.click();
+}
+
+
+/**
+ * Toolbar action: upload all music sheets from JSON, replacing the data
+ */
+async function toolUploadAll()
+{
+	// TODO
+}
+
 //////////
 // Main //
 //////////
@@ -141,6 +250,10 @@ async function main()
 		element.onclick = toolLogOut;
 	if (element = document.getElementById('toolNewSheet'))
 		element.onclick = toolNewSheet;
+	if (element = document.getElementById('toolDownloadAll'))
+		element.onclick = toolDownloadAll;
+	if (element = document.getElementById('toolUploadAll'))
+		element.onclick = toolUploadAll;
 
 	keepCookieLoop();
 
@@ -155,7 +268,7 @@ async function main()
 		return;
 
 	// Get files or stop
-	const filesObj = await googleApiGetFiles();
+	const filesObj = await googleApiGetFilesMetadata();
 	if (filesObj === null)
 		return;
 

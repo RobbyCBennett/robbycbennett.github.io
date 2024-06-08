@@ -30,6 +30,11 @@ const REFRESH_TOKEN_EXPIRATION_DURATION_SEC = 60 * 60 * 48; // 2 days
 // Cookie that lasts as long as Google says, which is 1 hour at the time of writing this
 const COOKIE_GOOGLE_ACCESS_TOKEN = 'google-access-token';
 
+// Rate limiting
+// https://console.cloud.google.com/apis/api/drive.googleapis.com/quotas
+const USER_COUNT = 2;
+const QUERIES_PER_MINUTE = 12000 / USER_COUNT;
+
 
 ////////////////
 // Google API //
@@ -101,6 +106,24 @@ async function googleApiFetchJson(loaderText, errorText, url, options={}, useAcc
 		customAlert(errorText, 'Ok');
 
 	return result;
+}
+
+
+/**
+ * Get music sheet file data in Google Drive
+ * @param {string} id
+ */
+async function googleApiGetFileData(id)
+{
+	const params = new URLSearchParams({
+		alt: 'media',
+	});
+
+	return googleApiFetchJson(
+		'Getting music sheet',
+		'Failed to get music sheet',
+		`${GOOGLE_API_BASE_URL}/drive/v3/files/${ID}?${params}`
+	);
 }
 
 
