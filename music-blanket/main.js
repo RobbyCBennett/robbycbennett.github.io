@@ -31,9 +31,8 @@ function googleUiUrlAuthorizationToken()
  * @param {string} name of the music sheet
  * @param {number} numberOutOfTotal number from 1 to total
  * @param {number} totalCount number of files
- * @param {Map<string, object>} nameAndIdToSheetDataMap
  */
-async function googleApiGetFileDataWithProgress(id, name, numberOutOfTotal, totalCount, nameAndIdToSheetDataMap)
+async function googleApiGetFileDataWithProgress(id, name, numberOutOfTotal, totalCount)
 {
 	const params = new URLSearchParams({
 		alt: 'media',
@@ -45,12 +44,10 @@ async function googleApiGetFileDataWithProgress(id, name, numberOutOfTotal, tota
 		`${GOOGLE_API_BASE_URL}/drive/v3/files/${id}?${params}`
 	);
 
-	nameAndIdToSheetDataMap.set(name + id, {
+	return {
 		name: name,
 		data: data,
-	});
-
-	return (data === null) ? false : true;
+	};
 }
 
 
@@ -178,10 +175,8 @@ async function toolDownloadAll()
 	// TODO support more than QUERIES_PER_MINUTE total queries
 
 	// Send requests to download them all
-	/** @type {Promise<boolean>[]} */
+	/** @type {Promise<{name: string, data: any}>[]} */
 	const requestPromises = [];
-	/** @type {Map<string, object>} */
-	const nameAndIdToSheetDataMap = new Map();
 	for (let i = 0; i < QUERIES_PER_MINUTE; i++) {
 		if (requestInfoQueue.length === 0)
 			break;
@@ -192,17 +187,16 @@ async function toolDownloadAll()
 			requestInfo.name,
 			requestInfo.numberOutOfTotal,
 			total,
-			nameAndIdToSheetDataMap,
 		));
 	}
 
 	// Wait for them all to download
-	const successOfAllSheets = await Promise.all(requestPromises);
+	const allSheets = await Promise.all(requestPromises);
 
 	// Show a popup if there were any failures
 	let failures = 0;
-	for (const success of successOfAllSheets)
-		if (!success)
+	for (const sheet of allSheets)
+		if (!sheet.data)
 			failures++;
 	if (failures === 1)
 		customAlert('Failed to download the only music sheet', 'Ok');
@@ -213,7 +207,7 @@ async function toolDownloadAll()
 	const anchor = document.createElement('a');
 	anchor.download = 'music-blanket.json';
 	anchor.href = window.URL.createObjectURL(new Blob(
-		[JSON.stringify(Array.from(nameAndIdToSheetDataMap.values()))],
+		[JSON.stringify(allSheets)],
 		{ type: 'application/json' },
 	));
 	anchor.click();
