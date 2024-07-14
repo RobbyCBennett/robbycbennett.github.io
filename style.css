@@ -55,11 +55,11 @@ h1 {
 }
 label {
 	display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 15rem;
-    height: 15rem;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 15rem;
+	height: 15rem;
 	gap: 2rem;
 }
 label span {

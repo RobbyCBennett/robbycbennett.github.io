@@ -560,7 +560,7 @@ a > .sheetTitle {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-    box-sizing: border-box;
+	box-sizing: border-box;
 	flex: none;
 }
 .string .fret {
@@ -581,7 +581,7 @@ a > .sheetTitle {
 	max-width: 100vw;
 	padding: 0 2rem;
 	display: flex;
-    justify-content: space-between;
+	justify-content: space-between;
 	overflow: overlay auto;
 	position: fixed;
 	margin: 0;

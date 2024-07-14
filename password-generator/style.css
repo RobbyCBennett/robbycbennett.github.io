@@ -57,9 +57,9 @@
 body {
 	background: var(--body);
 	display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
 	margin: 0;
 }
 
