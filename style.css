@@ -29,6 +29,7 @@
 html {
 	font-size: var(--size);
 	background: var(--body);
+	-webkit-tap-highlight-color: transparent;
 }
 body {
 	font-size: 1.5rem;
