@@ -177,13 +177,13 @@ def main():
 	</head>
 
 	<body id='home'>
-		{header}
 		<div class='box'>
 			<h1>All Recipes</h1>
 			<ul class='spread'>
 				{recipe_links}
 			</ul>
 		</div>
+		{header}
 	</body>
 </html>''')
 	file.close()
