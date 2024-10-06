@@ -50,8 +50,9 @@ h1 {
 }
 #links {
 	display: flex;
-	flex-direction: row;
 	gap: 2rem;
+	flex-flow: wrap;
+	justify-content: center;
 }
 label {
 	display: flex;
