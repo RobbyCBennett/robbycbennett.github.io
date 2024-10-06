@@ -1,0 +1,145 @@
+:root {
+	--size: 18px;
+	--spacing: 2rem;
+
+	--text: #323232;
+	--accent: #C96100;
+	--body: #F2F2F7;
+	--box: #FCFCFC;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+
+		--text: #EEEEEE;
+		--accent: #E3852D;
+		--body: #19191F;
+		--box: #131317;
+	}
+}
+
+@font-face {
+	font-family: 'Libre Baskerville';
+	src: url('/recipes/assets/libreBaskerville.woff2') format('woff2');
+	font-style: normal;
+	font-weight: 400;
+}
+
+html {
+	font-family: 'Libre Baskerville';
+	font-size: var(--size);
+	background: var(--body);
+	color: var(--text);
+	-webkit-tap-highlight-color: transparent;
+}
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	min-height: 100vh;
+	margin: 0;
+	gap: var(--spacing);
+}
+
+.box {
+	background: var(--box);
+	padding: var(--spacing);
+	width: calc(100% - 2 * var(--spacing));
+}
+
+@media (min-width: 576px) {
+	.box {
+		width: 28rem;
+	}
+}
+
+@media (min-width: 1200px) {
+	body {
+		flex-direction: row;
+	}
+
+	header.box {
+		height: calc(100vh - 2* var(--spacing));
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: auto;
+		overflow: auto;
+	}
+}
+
+p {
+	margin-top: var(--spacing);
+	margin-bottom: 0;
+}
+
+h1 {
+	margin-top: 0;
+	margin-bottom: 0;
+	display: flex;
+	justify-content: space-between;
+	font-weight: normal;
+}
+
+a {
+	color: var(--accent);
+	text-decoration: none;
+	border-bottom: 0.1875em dotted transparent;
+	transition: border-color 0.125s;
+	outline: none;
+}
+
+a:hover, a:focus-visible {
+	border-color: var(--accent);
+}
+
+ul, ol {
+	margin: 0;
+	margin-top: var(--spacing);
+}
+
+ul {
+	padding-left: var(--spacing);
+}
+
+li::marker {
+	color: var(--accent);
+	line-height: 1rem;
+}
+
+li:not(:first-child) {
+	margin-top: calc(var(--spacing) / 2);
+}
+
+ol {
+	list-style: empty-style;
+}
+
+@counter-style empty-style {
+	system: extends decimal;
+	suffix: '      ';
+}
+
+ul > li::marker {
+	content: '';
+}
+
+ul > li::before {
+	content: '•';
+	color: var(--accent);
+	font-size: 2rem;
+	position: absolute;
+	margin-left: -1.125em;
+	margin-top: -0.3125em;
+}
+
+.horizontal {
+	display: flex;
+	flex-flow: wrap;
+	margin-top: var(--spacing);
+	column-gap: var(--spacing);
+	row-gap: calc(var(--spacing) / 2);
+}
