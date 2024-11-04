@@ -9,6 +9,8 @@
 }
 @media (prefers-color-scheme: dark) {
 	:root {
+		color-scheme: dark;
+
 		--text: #EEEEEE;
 		--body: #19191F;
 		--box: #131317;
