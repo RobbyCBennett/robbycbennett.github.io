@@ -46,26 +46,6 @@ class Recipe:
 
 RECIPES: list[Recipe] = [
 	Recipe(
-		'Asparagus',
-		'Rob',
-		'20 stalks',
-		[
-			'1 cup of water',
-			'20 asparagus stalks',
-			'1 tablespoon of butter',
-			'Rosemary',
-		],
-		[
-			'Steam the asparagus for 3 minutes',
-			'Butter a pan',
-			'Start grilling the asparagus for 2 minutes',
-			'Add the rosemary',
-		],
-		[
-			VEGETABLE,
-		],
-	),
-	Recipe(
 		'Banana Bread',
 		'Rob',
 		'1 loaf',
@@ -182,6 +162,35 @@ RECIPES: list[Recipe] = [
 		],
 	),
 	Recipe(
+		'Mashed Potatoes with Guacamole',
+		'Rob',
+		'1 serving',
+		[
+			'2 medium potatoes',
+			'1 medium avocado',
+			'1 cup of milk',
+			'1 tablespoon of butter',
+			'Garlic powder',
+			'Tajin seasoning',
+		],
+		[
+			'Put the potatoes in a pot of water',
+			'Gradually boil for 15 minutes',
+			'Strain the water from the pot',
+			'With the heat on, start mashing',
+			'Stir in butter and spices, gradually adding milk',
+			'Finish mashing the potatoes',
+			'In a bowl, slice then mash the avocado flesh',
+			'Plate the potatoes, guacamole on top',
+			'Season the top with tajin',
+		],
+		[
+			VEGETABLE,
+			SNACK,
+			SALTY,
+		],
+	),
+	Recipe(
 		'Chocolate Chip Cookies',
 		'Rob',
 		'12 cookies',
@@ -228,7 +237,27 @@ RECIPES: list[Recipe] = [
 		],
 	),
 	Recipe(
-		'Waffles',
+		'Steamed Asparagus',
+		'Rob',
+		'20 stalks',
+		[
+			'1 cup of water',
+			'20 asparagus stalks',
+			'1 tablespoon of butter',
+			'Rosemary',
+		],
+		[
+			'Steam the asparagus for 3 minutes',
+			'Butter a pan',
+			'Start grilling the asparagus for 2 minutes',
+			'Add the rosemary',
+		],
+		[
+			VEGETABLE,
+		],
+	),
+	Recipe(
+		'Wheat Waffles',
 		'Rob',
 		'4 waffles',
 		[
